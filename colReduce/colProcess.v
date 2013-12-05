@@ -33,7 +33,13 @@ module colProc(reset, clk,
    colWrapper col_abstr(reset, clk, two_pixel_vals,
 		       two_undel_proc_pixs,
 		       switch_vals, switch_sels, change);
-   
+
+
+   //forecast hcount & vcount 8 clock cycles ahead
+   //Same as hcount_f/vcount_f in vram_display_module
+   wire [10:0] 	 hcount_f = (hcount >= 1048) ? (hcount - 1048) : (hcount + 8);
+   wire [9:0] vcount_f = (hcount >= 1048) ? ((vcount == 805) ? 0 : vcount + 1) : vcount;
+   assign proc_pix_addr = {vcount_f, hcount_f[9:1]};   
 
    // For delaying by the latency, we use a BRAM
    // We actually need only 1320/2=660 address in BRAM
@@ -55,8 +61,8 @@ module colProc(reset, clk,
    // Now I understand why we only need 9 bits to represent
    // Horizontal scheme: we need 1024 pixels -> hence 512 addresses
    // and hence 9 bits
-   wire [LOGSIZE-1:0] bram_writ_addr=hcount[9:1];
-   wire [LOGSIZE-1:0] bram_read_addr=hcount[9:1]+12;
+   wire [LOGSIZE-1:0] bram_writ_addr=hcount_f[9:1];
+   wire [LOGSIZE-1:0] bram_read_addr=hcount_f[9:1]+12;
    wire [LOGSIZE-1:0] bram_addr = bram_we ? bram_writ_addr : bram_read_addr;
 
    wire [35:0] 	      two_del_proc_pixs;
@@ -75,11 +81,7 @@ module colProc(reset, clk,
 	two_proc_pixs <= ~hcount[0] ? two_del_proc_pixs : two_proc_pixs;
      end
 
-   //forecast hcount & vcount 8 clock cycles ahead
-   //Same as hcount_f/vcount_f in vram_display_module
-   wire [10:0] 	 hcount_f = (hcount >= 1048) ? (hcount - 1048) : (hcount + 8);
-   wire [9:0] vcount_f = (hcount >= 1048) ? ((vcount == 805) ? 0 : vcount + 1) : vcount;
 
-   assign proc_pix_addr = {vcount_f, hcount_f[9:1]};
+
 
 endmodule // colProc
