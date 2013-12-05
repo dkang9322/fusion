@@ -18,10 +18,9 @@
 // We use a very simple ZBT interface, which does not involve any clock
 // generation or hiding of the pipelining.  See zbt_6111.v for more info.
 //
-// switch [1:0] is used for the color reduction selection
+// switch [1:0] is used for the color reduction selection, if switch[1:0]=2'd3, then we have fuse mode
 // switch [7:5] is used for the color reduction value
-// switch [4] used for switching between grayscale and edgeOut,
-// switch [4] is also used for switching between color, edge
+// switch [4] is used for switching between color, edge (only when switch[1:0] < 3)
 // (if switch[4]=1 -> display color, otherwise edge)
 //
 // Bug fix: Jonathan P. Mailoa <jpmailoa@mit.edu>
@@ -612,7 +611,9 @@ module zbt_6111_sample(beep, audio_reset_b,
    // Hacky Image Fuser
    // Note Display output is the inverse of writing output
    // For writing, we need to invert zbt1_edge_pixels
-   wire [35:0] 	zbt1_proc_pixels = zbt1_edge_sel?~zbt1_edge_pixels:zbt1_colr_pixels;
+   wire [35:0] 	zbt1_fuse_pixels = zbt1_edge_sel?~zbt1_edge_pixels:zbt1_colr_pixels;
+
+   wire [35:0] 	zbt1_proc_pixels = (switch[0]&switch[1]) ? zbt1_fuse_pixels : (switch[4] ? zbt1_colr_pixels : zbt1_edge_pixels);
    wire [18:0] 	zbt1_dwrite_addr = zbt1_colr_addr;
 
    
