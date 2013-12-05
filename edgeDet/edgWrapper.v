@@ -2,7 +2,8 @@ module edgWrapper(reset, clk,
 		  two_pixel_vals,
 		  two_proc_pixs,
 		  hcount,
-		  gs_switch
+		  gs_switch,
+		  edg_sel
 		  );
    /*
     This function is a wrapper for the edgeDetect pixel written by
@@ -12,8 +13,10 @@ module edgWrapper(reset, clk,
    input [35:0] two_pixel_vals;
    output [35:0] two_proc_pixs;
 
+
    input [10:0]  hcount;
    input 	 gs_switch; //True if we want to display grayscale data
+   output 	 edg_sel; //Edge Selector
    
    //Input to edgedetection
    wire [23:0] 	 pix1RGB, pix2RGB;
@@ -23,7 +26,7 @@ module edgWrapper(reset, clk,
 
    //Outputs of edgedetection
    wire [23:0] 	 edgRGB;
-   wire 	 edgSel;
+   wire 	 edg_sel;
 
    /* Various Test Comments for Switching Order of pixel passing *
    /*
@@ -37,7 +40,7 @@ module edgWrapper(reset, clk,
     All sort of image defragmentation happened
    */
    edgedetection edgDetect(reset, clk, pix1RGB, pix2RGB, hcount,
-			   edgRGB, edgSel, gs_switch);
+			   edgRGB, edg_sel, gs_switch);
 
    
    /* All under the assumption that we get an edge output

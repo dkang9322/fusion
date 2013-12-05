@@ -4,7 +4,8 @@ module edgProc(reset, clk,
 	       write_addr, //Data Address to write in ZBT bank 1
 	       two_proc_pixs, // Processed Pixel
 	       proc_pix_addr,
-	       gs_switch
+	       gs_switch,
+	       edg_sel
 	       );
    input reset, clk;
    input [10:0] hcount;
@@ -14,14 +15,19 @@ module edgProc(reset, clk,
    output [35:0] two_proc_pixs;
    output [18:0] proc_pix_addr;
    input 	 gs_switch; //switch[4], true if we want grayscale
+   output 	 edg_sel; //Sobel Operator edgeSelect Output
    
-   // Two Outputs of this module
+   
+   // Three Outputs of this module
    wire [35:0] 	 two_proc_pixs;
    wire [18:0] 	 proc_pix_addr;
+   wire 	 edg_sel;
+   
 
 
    edgWrapper edg_abstr(reset, clk, two_pixel_vals,
-			two_proc_pixs, hcount, gs_switch);
+			two_proc_pixs, hcount, gs_switch,
+			edg_sel);
    
    //forecast hcount & vcount 8 clock cycles ahead
    //Same as hcount_f/vcount_f in vram_display_module

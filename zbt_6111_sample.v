@@ -563,10 +563,12 @@ module zbt_6111_sample(beep, audio_reset_b,
    // Process Pixels
    wire [35:0] 	zbt1_edge_pixels;
    wire [18:0] 	zbt1_edge_addr; //appropriately delayed address
+   wire         zbt1_edge_sel;
+   
 
    edgProc edgPixToZBT1(reset, clk, hcount, vcount, zbt0_two_pixels,
 			zbt1_write_addr, zbt1_edge_pixels,
-			zbt1_edge_addr, switch[4]);
+			zbt1_edge_addr, switch[4], zbt1_edge_sel);
    
 
    //--------------------------------------------------------------------------------
@@ -604,7 +606,13 @@ module zbt_6111_sample(beep, audio_reset_b,
    wire [35:0] 	zbt1_proc_pixels = zbt1_edge_pixels;
    wire [18:0] 	zbt1_dwrite_addr = zbt1_edge_addr;
     */
-   wire [35:0] 	zbt1_proc_pixels = switch[4] ? zbt1_colr_pixels : zbt1_edge_pixels;
+   //Below is for duplex of edgeDetection and colorReduction
+   //wire [35:0] 	zbt1_proc_pixels = switch[4] ? zbt1_colr_pixels : zbt1_edge_pixels;
+
+   // Hacky Image Fuser
+   // Note Display output is the inverse of writing output
+   // For writing, we need to invert zbt1_edge_pixels
+   wire [35:0] 	zbt1_proc_pixels = zbt1_edge_sel?~zbt1_edge_pixels:zbt1_colr_pixels;
    wire [18:0] 	zbt1_dwrite_addr = zbt1_colr_addr;
 
    
