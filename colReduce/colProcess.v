@@ -50,8 +50,10 @@ module colProc(reset, clk,
    // On the other cycle, it reads from location hcount>>1+12
    // Note that end effects are negligible, since we have power_of_2
    // Also, we want to have different addresses for read/write
-   wire [LOGSIZE-1:0] bram_writ_addr=hcount>>1;
-   wire [LOGSIZE-1:0] bram_read_addr=(hcount>>1)+12;
+   
+   // So we discard the MSB of hcount
+   wire [LOGSIZE-1:0] bram_writ_addr=hcount[9:1];
+   wire [LOGSIZE-1:0] bram_read_addr=hcount[9:1]+12;
    wire [LOGSIZE-1:0] bram_addr = bram_we ? bram_writ_addr : bram_read_addr;
 
    wire [35:0] 	      two_del_proc_pixs;
