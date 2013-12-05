@@ -557,7 +557,7 @@ module zbt_6111_sample(beep, audio_reset_b,
    // Edge Detection Module
    //--------------------------------------------------------------------------------
 
-    
+   /*
    // Process Pixels
    wire [35:0] 	zbt1_edge_pixels;
    wire [18:0] 	zbt1_edge_addr; //appropriately delayed address
@@ -566,28 +566,28 @@ module zbt_6111_sample(beep, audio_reset_b,
 			zbt1_write_addr, zbt1_edge_pixels,
 			zbt1_edge_addr, switch[4]);
    
-
+    */
    //--------------------------------------------------------------------------------
    // Color Reduction Module
    //--------------------------------------------------------------------------------
    
-   /*
+
     wire [35:0] zbt1_colr_pixels;
     wire [18:0] zbt1_colr_addr;
     
-   pixProc procPixToZBT1(reset, clk, hcount, vcount, zbt0_two_pixels,
+   colProc colrPixToZBT1(reset, clk, hcount, vcount, zbt0_two_pixels,
 			 zbt1_write_addr, zbt1_colr_pixels,
 			 zbt1_colr_addr,
 			 switch[7:5],
 			 switch[1:0],
 			 col_change); //col(or)_change is button3, debounced
-    */
+
 
 
    /* 
     --------------------------------------------------------------------------------
     Data Pins to ZBT 1
-    
+    p
     On Write (if switch[3] ON, then writes on every other clock edge)
     Data Wire to ZBT1: zbt1_proc_pixels
     Addr Wire to ZBT1: zbt1_dwrite_addr
@@ -597,8 +597,14 @@ module zbt_6111_sample(beep, audio_reset_b,
     Addr Wire to ZBT1: vram_vga_addr
     --------------------------------------------------------------------------------
     */
+   // Below is for edgeDetection Only
+   /*
    wire [35:0] 	zbt1_proc_pixels = zbt1_edge_pixels;
    wire [18:0] 	zbt1_dwrite_addr = zbt1_edge_addr;
+    */
+   wire [35:0] 	zbt1_proc_pixels = zbt1_colr_pixels;
+   wire [18:0] 	zbt1_dwrite_addr = zbt1_colr_addr;
+
    
    /* Storing Processed Pixel Value to ZBT bank 1 */
    assign vram_addr1 = my_we1 ? zbt1_dwrite_addr : vram_vga_addr;
