@@ -38,7 +38,7 @@ module colProc(reset, clk,
    // For delaying by the latency, we use a BRAM
    // We actually need only 1320/2=660 address in BRAM
    // since we're storing two pixels per two-cycles
-   parameter LOGSIZE = 10;
+   parameter LOGSIZE = 9;
    parameter WIDTH = 36;
 
    // Caution, this might be off, start writing on even hcount
@@ -52,6 +52,9 @@ module colProc(reset, clk,
    // Also, we want to have different addresses for read/write
    
    // So we discard the MSB of hcount
+   // Now I understand why we only need 9 bits to represent
+   // Horizontal scheme: we need 1024 pixels -> hence 512 addresses
+   // and hence 9 bits
    wire [LOGSIZE-1:0] bram_writ_addr=hcount[9:1];
    wire [LOGSIZE-1:0] bram_read_addr=hcount[9:1]+12;
    wire [LOGSIZE-1:0] bram_addr = bram_we ? bram_writ_addr : bram_read_addr;
