@@ -1,4 +1,4 @@
-module hsvReduce(reset, clk,
+module colWrapper(reset, clk,
 		 two_pixel_vals, // Input two pixel worth of data
 		 two_proc_pixs, // Output pixels
 		 switch_vals,
@@ -37,6 +37,7 @@ module hsvReduce(reset, clk,
    // We really need to change proc_pixs every other clock cycle
    wire [35:0] 	 two_proc_pixs;
 
+   // Switching Green and Blue seemed to do the trick
    assign two_proc_pixs = {tRGB2[23:18], tRGB2[7:2], tRGB2[15:10], tRGB1[23:18], tRGB1[7:2], tRGB1[15:10]};
    
    /* Switched Green and Blue*/
