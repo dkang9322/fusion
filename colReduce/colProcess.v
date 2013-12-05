@@ -21,44 +21,20 @@ module colProc(reset, clk,
    input 	 change;
    
    
-
+   // Two Outputs of this module
    wire [35:0] 	 two_proc_pixs;
-   
+   wire [18:0] 	 proc_pix_addr;
 
-   // Removing THREE LSBs
-   parameter R_MASK = 6'b110000;
-   parameter G_MASK = 6'b111000;
-   parameter B_MASK = 6'b110000;
-
-   // We want to clock our processing
-   //reg [35:0] 	 two_proc_pixs;
-   reg [18:0] 	 proc_pix_addr;
-
-   // Note actually delay is half of DELAY
-   parameter DELAY = 80;
-   parameter ADD_DEL = 19 * DELAY - 1;
-   parameter DAT_DEL = 36 * DELAY - 1;
-   
-
-   reg [ADD_DEL:0] addr_del;
-   reg [DAT_DEL:0] dat_del;
-
-   colWrapper col_abstr(reset, clk, dat_del[DAT_DEL:DAT_DEL-35],
+   colWrapper col_abstr(reset, clk, two_pixel_vals,
 		       two_proc_pixs,
 		       switch_vals, switch_sels, change);
    
+   //forecast hcount & vcount 8 clock cycles ahead
+   //Same as hcount_f/vcount_f in vram_display_module
+   wire [10:0] 	 hcount_f = (hcount >= 1048) ? (hcount - 1048) : (hcount + 8);
+   wire [9:0] vcount_f = (hcount >= 1048) ? ((vcount == 805) ? 0 : vcount + 1) : vcount;
+
    
-   
-   // Simply RGB Thresholding
-   always @(posedge clk)
-     begin
-	dat_del <= {dat_del[DAT_DEL - 36:0], two_pixel_vals};
-	
-	//two_proc_pixs <= dat_del[DAT_DEL:DAT_DEL-35] & {R_MASK, G_MASK, B_MASK,R_MASK, G_MASK, B_MASK};
-	
-	// Let's see what happens if we delay write_addr by more than appropriate
-	addr_del <= {addr_del[ADD_DEL-19:0], write_addr};
-	proc_pix_addr <= addr_del[ADD_DEL:ADD_DEL-18];
-     end
-   
-endmodule // pixProc
+   assign proc_pix_addr = {vcount_f, hcount_f[9:1]};
+
+endmodule // colProc
