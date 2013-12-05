@@ -20,7 +20,9 @@
 //
 // switch [1:0] is used for the color reduction selection
 // switch [7:5] is used for the color reduction value
-// switch [4] used for switching between grayscale and edgeOut
+// switch [4] used for switching between grayscale and edgeOut,
+// switch [4] is also used for switching between color, edge
+// (if switch[4]=1 -> display color, otherwise edge)
 //
 // Bug fix: Jonathan P. Mailoa <jpmailoa@mit.edu>
 // Date   : 11-May-09
@@ -557,7 +559,7 @@ module zbt_6111_sample(beep, audio_reset_b,
    // Edge Detection Module
    //--------------------------------------------------------------------------------
 
-   /*
+
    // Process Pixels
    wire [35:0] 	zbt1_edge_pixels;
    wire [18:0] 	zbt1_edge_addr; //appropriately delayed address
@@ -566,7 +568,7 @@ module zbt_6111_sample(beep, audio_reset_b,
 			zbt1_write_addr, zbt1_edge_pixels,
 			zbt1_edge_addr, switch[4]);
    
-    */
+
    //--------------------------------------------------------------------------------
    // Color Reduction Module
    //--------------------------------------------------------------------------------
@@ -602,7 +604,7 @@ module zbt_6111_sample(beep, audio_reset_b,
    wire [35:0] 	zbt1_proc_pixels = zbt1_edge_pixels;
    wire [18:0] 	zbt1_dwrite_addr = zbt1_edge_addr;
     */
-   wire [35:0] 	zbt1_proc_pixels = zbt1_colr_pixels;
+   wire [35:0] 	zbt1_proc_pixels = switch[4] ? zbt1_colr_pixels : zbt1_edge_pixels;
    wire [18:0] 	zbt1_dwrite_addr = zbt1_colr_addr;
 
    
