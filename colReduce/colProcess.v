@@ -22,12 +22,13 @@ module colProc(reset, clk,
    
    
    // Two Outputs of this module
-   wire [35:0] 	 two_proc_pixs;
+   reg [35:0] 	 two_proc_pixs;
    wire [18:0] 	 proc_pix_addr;
 
    // Undelayed processed pixels, we need to hold the value
    // for max_hcount - process_latency = 1344 - 24 = 1320
    wire [35:0] 	 two_undel_proc_pixs;
+
 
    colWrapper col_abstr(reset, clk, two_pixel_vals,
 		       two_undel_proc_pixs,
@@ -52,14 +53,22 @@ module colProc(reset, clk,
    wire [LOGSIZE-1:0] bram_writ_addr=hcount>>1;
    wire [LOGSIZE-1:0] bram_read_addr=(hcount>>1)+12;
    wire [LOGSIZE-1:0] bram_addr = bram_we ? bram_writ_addr : bram_read_addr;
-   
+
+   wire [35:0] 	      two_del_proc_pixs;
    // 1024 by 36 bits address delay
    // Higher addresses are mostly junk, and unused
-   mybram #(.LOGSIZE(LOGSIZE), .WIDTH(WIDTH)) (bram_addr,
+   mybram #(.LOGSIZE(LOGSIZE), .WIDTH(WIDTH)) lat_delay(bram_addr,
 					       clk,
 					       two_undel_proc_pixs,
 					       two_del_proc_pixs,
 					       bram_we);
+
+   // Since BRAM outputs write value, on hcount[0]=1, we get write_val
+   // READ value available on hcount[0]==0
+   always @(posedge clk)
+     begin
+	two_proc_pixs <= ~hcount[0] ? two_del_proc_pixs : two_proc_pixs;
+     end
 
    //forecast hcount & vcount 8 clock cycles ahead
    //Same as hcount_f/vcount_f in vram_display_module
