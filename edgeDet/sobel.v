@@ -45,7 +45,10 @@ module sobel(clock,z0,z1,z2,z3,z4,z5,z6,z7,z8,switch,edge_out);
 
      end // always @ (posedge clock)
 
-   assign edge_out =(sum > 200) ? 0 : 8'hff;
+   assign edge_out =(sum > 280) ? 0 : 8'hff;
+   
+   // Below gave us a decent, noiseless
+   //assign edge_out =(sum > 200) ? 0 : 8'hff;
 
    
    // Below gives us way too NOISY   
