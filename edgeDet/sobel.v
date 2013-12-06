@@ -45,7 +45,7 @@ module sobel(clock,z0,z1,z2,z3,z4,z5,z6,z7,z8,switch,edge_out);
 
      end // always @ (posedge clock)
    
-   assign edge_out =(sum > 160) ? 0 : 8'hff;
+   assign edge_out =(sum > 80) ? 0 : 8'hff;
 
    // Below gives inversion of what we want
    // Below is visually more pleasing, when debugging
